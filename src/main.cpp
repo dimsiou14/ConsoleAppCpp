@@ -1,42 +1,61 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include "Time.h"
 
 int main()
 {
-    std::string textInput;
+    Time t1(0, 0, 0);
 
-    while (true) {
-        
+    while (true)
+    {
         std::string innerText;
-        std::cout << "Send me text to save it or send me DLT in order to delete and startover...\n Enter the text...  ";
+
+        std::cout << "Enter Seconds or DLT to reset): ";
         std::getline(std::cin, innerText);
-        textInput += innerText + '\n';
 
-        if (innerText == "DLT") {
+        if (innerText == "DLT")
+        {
             std::ofstream file("test.csv");
-
             file.close();
-            textInput.clear();
+
+            t1 = Time(0, 0, 0);
 
             std::cout << "File cleared.\n";
-
-        } 
-        else {
-             std::ofstream file("test.csv", std::ios::app);
-
-            if (!file.is_open())
-            {
-                std::cerr << "Failed to open file\n";
-                return 1;
-            }
-
-            file << innerText << '\n';
-
-            file.close();
-             std::cout << "Text Saved successfully, " << textInput << "!" << std::endl;
+            continue;
         }
-       
+
+        // try to add seconds
+        int seconds = 0;
+
+        try
+        {
+            seconds = std::stoi(innerText);
+        }
+        catch (...)
+        {
+            std::cout << "Invalid number!\n";
+            continue;
+        }
+
+        // do the calculations
+        t1 = t1 + seconds;
+
+        // save result into file
+        std::ofstream file("test.csv", std::ios::app);
+
+        if (!file.is_open())
+        {
+            std::cerr << "Failed to open file\n";
+            return 1;
+        }
+
+        file << t1 << "," << seconds << '\n';
+
+        file.close();
+
+        std::cout << "Saved: " << t1 << " (+"
+                  << seconds << "s)" << std::endl;
     }
 
     return 0;
